@@ -70,16 +70,22 @@
 
       <div class="reign-line">Year <span id="reign-year">1</span> of your reign</div>
 
-      <div class="card-stage">
-        <div class="card-shadow"></div>
-        <article class="card" id="card">
-          <div class="card-portrait" id="card-portrait">🧔</div>
-          <div class="card-name" id="card-name">The Advisor</div>
-          <p class="card-text" id="card-text">A dilemma awaits…</p>
-          <div class="choice-hint left" id="hint-left"></div>
-          <div class="choice-hint right" id="hint-right"></div>
-        </article>
+      <!-- the living, illustrated realm reacts to your rule -->
+      <div class="realm-wrap">
+        <canvas id="realm"></canvas>
+        <div class="realm-frame"></div>
       </div>
+
+      <!-- the dilemma, on a parchment scroll (swipe or tap to decide) -->
+      <article class="scroll" id="card">
+        <div class="scroll-top">
+          <span class="scroll-portrait" id="card-portrait">🧔</span>
+          <span class="scroll-name" id="card-name">The Advisor</span>
+        </div>
+        <p class="scroll-text" id="card-text">A dilemma awaits…</p>
+        <div class="choice-hint left" id="hint-left"></div>
+        <div class="choice-hint right" id="hint-right"></div>
+      </article>
 
       <div class="choices">
         <button class="btn-choice" id="btn-left"><span class="arrow">◀</span><span class="label" id="label-left">No</span></button>
@@ -117,6 +123,7 @@
   </div>
 
   <script src="scenarios.js"></script>
+  <script src="realm.js"></script>
   <script src="game.js"></script>
 </body>
 </html>
