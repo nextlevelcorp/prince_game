@@ -182,5 +182,94 @@ const SCENARIOS = [
     left:  { label: "Keep your hands clean", effects: { authority: -12, army: -4, people: +6, treasury: -2 } },
     right: { label: "Do what must be done", effects: { authority: +12, army: +4, people: -4, treasury: +2 } },
     lesson: "A prince must learn 'how not to be good, and to use this knowledge or not according to necessity.' To cling to virtue among so many who are not virtuous is to ensure your own ruin — govern the act, not the sentiment."
+  },
+  {
+    portrait: "🏗️",
+    name: "Architect Bramante",
+    text: "A rival prince rose to power through sheer luck and the favor of his patrons. You climbed by your own strength. He now seeks your friendship.",
+    left:  { label: "Embrace him as an equal", effects: { authority: -10, army: -6, people: +2, treasury: +6 } },
+    right: { label: "Keep him at arm's length", effects: { authority: +8, army: +4, people: -2, treasury: +2 } },
+    lesson: "Those who become princes by fortune do so with little effort, but maintain themselves with great difficulty — for they 'have no roots.' He who rises by his own arms and virtue lays foundations that storms cannot easily topple."
+  },
+  {
+    portrait: "🎻",
+    name: "The Idle Courtier",
+    text: "Peace has settled on the realm. Your nobles urge you to set aside war and devote your days to the hunt, music, and pleasure.",
+    left:  { label: "Indulge in the good life", effects: { authority: -8, army: -12, people: +6, treasury: -4 } },
+    right: { label: "Drill and prepare for war", effects: { authority: +8, army: +12, people: -4, treasury: -6 } },
+    lesson: "The chief cause of losing a state is the neglect of the art of war. In peace a prince should think on it more than ever — by the hunt, by study of history, by mapping the land — so that adversity never finds him unprepared."
+  },
+  {
+    portrait: "🗿",
+    name: "Statue of the Old King",
+    text: "You may model your reign on a legendary ruler of the past — aiming for his impossible greatness, even if you fall short.",
+    left:  { label: "Aim modestly, surely", effects: { authority: -6, army: -2, people: +4, treasury: +4 } },
+    right: { label: "Aim for the heights", effects: { authority: +12, army: +4, people: +2, treasury: -6 } },
+    lesson: "A prudent man should ever follow the paths of great men and imitate the excellent, 'so that if his virtue does not reach theirs, at least it may give off some scent of it.' Be the archer who aims high to strike his true mark."
+  },
+  {
+    portrait: "🩸",
+    name: "Captain of the Guard",
+    text: "An ambitious noble plots against your life. You can act now on suspicion alone, or wait until you hold certain proof.",
+    left:  { label: "Wait for hard proof", effects: { authority: -12, army: -2, people: +4, treasury: 0 } },
+    right: { label: "Move on suspicion now", effects: { authority: +10, army: +2, people: -8, treasury: -2 } },
+    lesson: "On conspiracies: the conspirator acts alone in fear and suspicion, while a prince loved by his people stands behind the majesty of the state. Deny plotters that hope — yet a ruler who suspects all, and strikes the innocent, breeds the very enemies he fears."
+  },
+  {
+    portrait: "📯",
+    name: "The Herald",
+    text: "A momentous deed is yours to claim — a great public victory. Do you announce it yourself, or let it be carried out in another's name?",
+    left:  { label: "Let another take the stage", effects: { authority: -8, army: 0, people: -6, treasury: +2 } },
+    right: { label: "Claim the glory yourself", effects: { authority: +12, army: +2, people: +8, treasury: -4 } },
+    lesson: "Great enterprises and noble examples keep a prince's name high. Nothing makes him so esteemed as great undertakings done in his own name — for men are won by the present spectacle of greatness far more than by quiet, hidden worth."
+  },
+  {
+    portrait: "🧮",
+    name: "Tax Collector Bruno",
+    text: "A conquered city was wealthy and used to its own freedoms. Holding it strains you. How shall you secure it for good?",
+    left:  { label: "Rule it from afar by force", effects: { authority: -6, army: -8, people: -6, treasury: -4 } },
+    right: { label: "Let it self-rule under tribute", effects: { authority: +6, army: +2, people: +8, treasury: +6 } },
+    lesson: "Cities used to liberty are best held in three ways: ruin them, dwell in them, or let them live under their own laws while drawing tribute and installing a friendly few. A free city not destroyed will 'never forget the name of liberty.'"
+  },
+  {
+    portrait: "🤝",
+    name: "Two Rival Lords",
+    text: "Two great houses war at your doorstep. You can stay neutral and watch, or openly commit your banner to one side.",
+    left:  { label: "Stay carefully neutral", effects: { authority: -10, army: +2, people: 0, treasury: +4 } },
+    right: { label: "Declare for one side boldly", effects: { authority: +10, army: -4, people: +2, treasury: -6 } },
+    lesson: "A prince is esteemed when he is a true friend or an open enemy — declaring himself without reserve. Neutrality earns the hatred of the loser and the contempt of the winner; the irresolute prince, to escape present danger, most often runs straight into it."
+  },
+  {
+    portrait: "🍷",
+    name: "The Poisoner's Offer",
+    text: "A shadowy figure offers to quietly remove your most dangerous enemy — by means best left unspoken.",
+    left:  { label: "Refuse such dark means", effects: { authority: -8, army: -4, people: +8, treasury: -2 } },
+    right: { label: "Accept the quiet solution", effects: { authority: +10, army: +2, people: -6, treasury: -4 } },
+    lesson: "Machiavelli judged deeds by their end: cruelty may be excused when it secures the state and is not prolonged. Yet he warned that power won by infamy and bloodshed brings glory never — such victories may save the throne but damn the name."
+  },
+  {
+    portrait: "🌹",
+    name: "Lady of the Court",
+    text: "Fortune has smiled on you for years without effort. An advisor warns that easy times breed soft habits. Do you heed her?",
+    left:  { label: "Ride your good fortune", effects: { authority: +4, army: -8, people: +6, treasury: +6 } },
+    right: { label: "Steel yourself for the turn", effects: { authority: +8, army: +10, people: -4, treasury: -6 } },
+    lesson: "Fortune shows her power where no prepared strength resists her, and turns her fury where no dykes are raised. She is a woman, says Machiavelli, and friend to the young and bold who command her — but she abandons the prince who leans on her alone."
+  },
+  {
+    portrait: "⚒️",
+    name: "Foreman of the Mines",
+    text: "You could fund your reign through your own lands and industry, or by leaning on the gold of a wealthy foreign backer.",
+    left:  { label: "Lean on the rich patron", effects: { authority: -10, army: -2, people: 0, treasury: +14 } },
+    right: { label: "Build self-sufficient wealth", effects: { authority: +8, army: +4, people: +4, treasury: -8 } },
+    lesson: "A prince who depends on the resources and goodwill of others stands on sand. Self-sufficient arms and revenue let him 'defend himself against whoever assails him' — the dependent ruler is a guest in his own house, dismissed at his patron's whim."
+  },
+  {
+    portrait: "🕯️",
+    name: "The Confessor",
+    text: "A long-trusted minister has served you faithfully but now grows old and cautious, resisting every bold move you wish to make.",
+    left:  { label: "Keep the loyal servant", effects: { authority: -6, army: -4, people: +4, treasury: +2 } },
+    right: { label: "Replace him with vigor", effects: { authority: +8, army: +6, people: -4, treasury: -4 } },
+    lesson: "The choice of ministers is no light matter, for they are the first measure of a prince's brain. A good minister thinks always of the prince, never of himself — but a prince must also bend with the times, lest yesterday's faithful servant become tomorrow's dead weight."
   }
 ];
+
