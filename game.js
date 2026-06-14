@@ -9,6 +9,67 @@
   const STAT_LABEL = { authority: "Authority", army: "the Army", people: "the People", treasury: "the Treasury" };
   const START = 50;          // every pillar starts balanced
   const BEST_KEY = "princes-dilemma-best";
+  const WISDOM_KEY = "princes-dilemma-wisdom";
+  const MUTE_KEY = "princes-dilemma-muted";
+
+  // ---- Stable id per scenario (hash of its lesson, order-independent) ----
+  function hash(str) {
+    let h = 5381;
+    for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+    return "w" + (h >>> 0).toString(36);
+  }
+  SCENARIOS.forEach((s) => { s.id = hash(s.lesson); });
+
+  // ---- Wisdom collection (persisted set of encountered lesson ids) ----
+  function loadWisdom() {
+    try { return new Set(JSON.parse(localStorage.getItem(WISDOM_KEY) || "[]")); }
+    catch (e) { return new Set(); }
+  }
+  let wisdom = loadWisdom();
+  function collectWisdom(id) {
+    if (wisdom.has(id)) return false;
+    wisdom.add(id);
+    localStorage.setItem(WISDOM_KEY, JSON.stringify([...wisdom]));
+    return true; // newly learned
+  }
+
+  // ---- Sound engine (synthesized — no asset files) ----
+  const Sound = {
+    ctx: null,
+    muted: localStorage.getItem(MUTE_KEY) === "1",
+    init() {
+      if (this.ctx) return;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (AC) this.ctx = new AC();
+    },
+    resume() { if (this.ctx && this.ctx.state === "suspended") this.ctx.resume(); },
+    tone(freq, dur, type, gain, when) {
+      if (this.muted || !this.ctx) return;
+      const t0 = this.ctx.currentTime + (when || 0);
+      const osc = this.ctx.createOscillator();
+      const g = this.ctx.createGain();
+      osc.type = type || "sine";
+      osc.frequency.setValueAtTime(freq, t0);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(gain || 0.15, t0 + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(g).connect(this.ctx.destination);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.02);
+    },
+    click() { this.tone(420, 0.08, "triangle", 0.12); },
+    deal()  { this.tone(330, 0.12, "sine", 0.10); this.tone(495, 0.14, "sine", 0.07, 0.04); },
+    left()  { this.tone(300, 0.12, "sawtooth", 0.10); this.tone(200, 0.18, "sine", 0.10, 0.05); },
+    right() { this.tone(440, 0.10, "triangle", 0.10); this.tone(660, 0.16, "sine", 0.10, 0.05); },
+    learn() { this.tone(660, 0.10, "sine", 0.10); this.tone(880, 0.14, "sine", 0.10, 0.07); this.tone(1175, 0.18, "sine", 0.08, 0.15); },
+    lose()  { this.tone(300, 0.3, "sawtooth", 0.12); this.tone(190, 0.5, "sine", 0.12, 0.12); this.tone(130, 0.7, "sine", 0.12, 0.28); },
+    win()   { [523, 659, 784, 1047].forEach((f, i) => this.tone(f, 0.3, "triangle", 0.11, i * 0.12)); },
+    toggle() {
+      this.muted = !this.muted;
+      localStorage.setItem(MUTE_KEY, this.muted ? "1" : "0");
+      return this.muted;
+    }
+  };
 
   // Ends-of-reign: triggered when a pillar empties (low) or overflows (high).
   const DOOM = {
@@ -44,6 +105,7 @@
     how: $("#screen-how"),
     game: $("#screen-game"),
     over: $("#screen-over"),
+    gallery: $("#screen-gallery"),
   };
   const card = $("#card");
   const els = {
@@ -87,6 +149,7 @@
     if (game.deck.length === 0) refillDeck();
     game.current = game.deck.pop();
     renderCard();
+    Sound.deal();
   }
 
   // ---- Rendering ----
@@ -123,6 +186,7 @@
   function choose(side) {
     if (!game.current || locked) return;
     locked = true;
+    Sound[side]();
     const choice = game.current[side];
     const eff = choice.effects;
 
@@ -144,6 +208,8 @@
     setTimeout(() => {
       // commit stat changes
       STATS.forEach((s) => { game.stats[s] += (eff[s] || 0); });
+      // living through the dilemma teaches its lesson
+      const learned = collectWisdom(game.current.id);
       const doom = checkDoom();
       renderStats();
       if (doom) {
@@ -151,6 +217,7 @@
         locked = false;
         return;
       }
+      if (learned) { Sound.learn(); toast("New counsel recorded"); }
       game.year += 1;
       drawCard();
       locked = false;
@@ -185,8 +252,60 @@
     const best = Number(localStorage.getItem(BEST_KEY) || 0);
     if (game.year > best) localStorage.setItem(BEST_KEY, String(game.year));
 
+    if (survivedLong) Sound.win(); else Sound.lose();
     setTimeout(() => show("over"), 380);
   }
+
+  // ---- Toast ----
+  let toastTimer = null;
+  function toast(msg) {
+    const t = $("#toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 1600);
+  }
+
+  // ---- Wisdom gallery ----
+  function buildGallery() {
+    const grid = $("#gallery-grid");
+    grid.innerHTML = "";
+    let count = 0;
+    SCENARIOS.forEach((s) => {
+      const got = wisdom.has(s.id);
+      if (got) count++;
+      const cardEl = document.createElement("div");
+      cardEl.className = "wisdom-card " + (got ? "unlocked" : "locked");
+      if (got) {
+        cardEl.innerHTML =
+          '<div class="wisdom-head">' +
+            '<div class="wisdom-portrait">' + s.portrait + '</div>' +
+            '<div><div class="wisdom-name">' + esc(s.name) + '</div>' +
+            '<div class="wisdom-tease">' + esc(s.text.slice(0, 46)).trim() + '…</div></div>' +
+            '<div class="wisdom-chevron">›</div>' +
+          '</div>' +
+          '<p class="wisdom-text">' + esc(s.lesson) + '</p>';
+        cardEl.querySelector(".wisdom-head").addEventListener("click", () => {
+          cardEl.classList.toggle("open");
+          Sound.click();
+        });
+      } else {
+        cardEl.innerHTML =
+          '<div class="wisdom-head">' +
+            '<div class="wisdom-portrait">🔒</div>' +
+            '<div><div class="wisdom-name">Undiscovered counsel</div>' +
+            '<div class="wisdom-tease">Face this dilemma to unlock it.</div></div>' +
+            '<div class="wisdom-chevron">›</div>' +
+          '</div>';
+      }
+      grid.appendChild(cardEl);
+    });
+    $("#gallery-progress").textContent = count + " / " + SCENARIOS.length + " counsels gathered";
+  }
+  function esc(str) {
+    return String(str).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  }
+  function openGallery() { buildGallery(); show("gallery"); }
 
   // ---- New game ----
   function newGame() {
@@ -242,11 +361,36 @@
   // ---- Buttons ----
   $("#btn-left").addEventListener("click", () => choose("left"));
   $("#btn-right").addEventListener("click", () => choose("right"));
-  $("#btn-start").addEventListener("click", newGame);
-  $("#btn-again").addEventListener("click", newGame);
-  $("#btn-menu").addEventListener("click", () => { showBest(); show("title"); });
-  $("#btn-how").addEventListener("click", () => show("how"));
-  $("#btn-how-back").addEventListener("click", () => show("title"));
+  $("#btn-start").addEventListener("click", () => { Sound.click(); newGame(); });
+  $("#btn-again").addEventListener("click", () => { Sound.click(); newGame(); });
+  $("#btn-menu").addEventListener("click", () => { Sound.click(); showBest(); show("title"); });
+  $("#btn-how").addEventListener("click", () => { Sound.click(); show("how"); });
+  $("#btn-how-back").addEventListener("click", () => { Sound.click(); show("title"); });
+  $("#btn-gallery").addEventListener("click", () => { Sound.click(); openGallery(); });
+  $("#btn-over-gallery").addEventListener("click", () => { Sound.click(); openGallery(); });
+  $("#btn-gallery-back").addEventListener("click", () => { Sound.click(); show("title"); showBest(); });
+
+  // ---- Sound toggle ----
+  const soundBtn = $("#btn-sound");
+  function renderSoundBtn() {
+    soundBtn.textContent = Sound.muted ? "🔇" : "🔊";
+    soundBtn.classList.toggle("muted", Sound.muted);
+  }
+  soundBtn.addEventListener("click", () => {
+    const muted = Sound.toggle();
+    renderSoundBtn();
+    if (!muted) Sound.click();
+  });
+  renderSoundBtn();
+
+  // Audio contexts must be created/resumed after a user gesture (mobile policy).
+  function unlockAudio() {
+    Sound.init();
+    Sound.resume();
+  }
+  window.addEventListener("pointerdown", unlockAudio);
+  window.addEventListener("touchstart", unlockAudio, { passive: true });
+  window.addEventListener("keydown", unlockAudio);
 
   // Keyboard for desktop play
   window.addEventListener("keydown", (e) => {
@@ -258,7 +402,10 @@
   // ---- Best score on title ----
   function showBest() {
     const best = Number(localStorage.getItem(BEST_KEY) || 0);
-    $("#title-best").textContent = best > 0 ? `Your longest reign: ${best} years` : "";
+    const learned = wisdom.size;
+    let txt = best > 0 ? `Your longest reign: ${best} years` : "";
+    if (learned > 0) txt += (txt ? " · " : "") + `${learned}/${SCENARIOS.length} counsels`;
+    $("#title-best").textContent = txt;
   }
 
   showBest();

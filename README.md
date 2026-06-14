@@ -27,6 +27,19 @@ If **any** pillar empties *or* overflows, your reign ends — and you're shown t
 real principle from *The Prince* that you ignored. Survive **20 years** for a
 "Reign Remembered." Your longest reign is saved on your device.
 
+## Wisdom Collected
+
+Every dilemma you face permanently unlocks its lesson in the **Wisdom Collected**
+gallery (reachable from the title and game-over screens). Tap an unlocked counsel
+to read the full Machiavellian principle behind it. Your goal beyond survival:
+gather all the counsels in the deck. Progress is saved on your device.
+
+## Sound
+
+The game has a synthesized soundtrack of effects (card deals, decisions, learning
+a new counsel, triumph and ruin) built with the Web Audio API — no audio files
+needed. Tap the 🔊 button (top-right) to mute or unmute; your choice is remembered.
+
 ## The teaching
 
 Every card is built on an actual lesson from *The Prince* — fear vs. love, your

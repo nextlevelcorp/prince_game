@@ -12,6 +12,9 @@
 <body>
   <div id="app">
 
+    <!-- ===== GLOBAL SOUND TOGGLE ===== -->
+    <button id="btn-sound" class="sound-toggle" aria-label="Toggle sound" title="Toggle sound">🔊</button>
+
     <!-- ===== TITLE SCREEN ===== -->
     <section id="screen-title" class="screen active">
       <div class="title-crest">♚</div>
@@ -21,6 +24,7 @@
       <p class="title-attr">— Niccolò Machiavelli, <em>The Prince</em></p>
       <button class="btn-primary" id="btn-start">Take the Throne</button>
       <button class="btn-ghost" id="btn-how">How to Rule</button>
+      <button class="btn-ghost" id="btn-gallery">Wisdom Collected</button>
       <p class="title-best" id="title-best"></p>
     </section>
 
@@ -94,8 +98,20 @@
         <p class="lesson-text" id="over-lesson"></p>
       </div>
       <button class="btn-primary" id="btn-again">Rise Again</button>
+      <button class="btn-ghost" id="btn-over-gallery">Wisdom Collected</button>
       <button class="btn-ghost" id="btn-menu">Abdicate to Menu</button>
     </section>
+
+    <!-- ===== WISDOM GALLERY ===== -->
+    <section id="screen-gallery" class="screen">
+      <h2 class="gallery-title">Wisdom Collected</h2>
+      <p class="gallery-progress" id="gallery-progress">0 / 0 counsels gathered</p>
+      <div class="gallery-grid" id="gallery-grid"></div>
+      <button class="btn-primary" id="btn-gallery-back">Return</button>
+    </section>
+
+    <!-- transient toast for newly learned counsel -->
+    <div id="toast" class="toast"></div>
 
   </div>
 
