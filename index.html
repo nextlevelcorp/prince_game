@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a1410" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>The Prince's Dilemma</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===== GLOBAL SOUND TOGGLE ===== -->
+    <button id="btn-sound" class="sound-toggle" aria-label="Toggle sound" title="Toggle sound">🔊</button>
+
+    <!-- ===== TITLE SCREEN ===== -->
+    <section id="screen-title" class="screen active">
+      <div class="title-crest">♚</div>
+      <h1 class="title-name">The Prince's<br />Dilemma</h1>
+      <p class="title-sub">Rule by wit, not by luck.</p>
+      <p class="title-quote">"It is better to be feared than loved,<br />if you cannot be both."</p>
+      <p class="title-attr">— Niccolò Machiavelli, <em>The Prince</em></p>
+      <button class="btn-primary" id="btn-start">Take the Throne</button>
+      <button class="btn-ghost" id="btn-how">How to Rule</button>
+      <button class="btn-ghost" id="btn-gallery">Wisdom Collected</button>
+      <p class="title-best" id="title-best"></p>
+    </section>
+
+    <!-- ===== HOW TO PLAY ===== -->
+    <section id="screen-how" class="screen">
+      <h2 class="how-title">How to Rule</h2>
+      <div class="how-body">
+        <p>Advisors bring you a <strong>dilemma</strong> each season. Decide with a tap or a swipe:</p>
+        <p class="how-row"><span class="swipe-chip left">◀ Swipe / tap left</span> for the first reply.</p>
+        <p class="how-row"><span class="swipe-chip right">tap right / Swipe ▶</span> for the second reply.</p>
+        <p>Every choice shifts your four pillars of power:</p>
+        <ul class="how-stats">
+          <li><span class="stat-ico">👑</span> <strong>Authority</strong> — your grip on the crown</li>
+          <li><span class="stat-ico">⚔️</span> <strong>Army</strong> — swords that defend you</li>
+          <li><span class="stat-ico">❤️</span> <strong>People</strong> — the love of the streets</li>
+          <li><span class="stat-ico">💰</span> <strong>Treasury</strong> — the gold that buys it all</li>
+        </ul>
+        <p class="how-warn">If any pillar empties <em>or</em> overflows, you fall. Keep all four in balance for as many years as you can — and learn what Machiavelli would have whispered in your ear.</p>
+      </div>
+      <button class="btn-primary" id="btn-how-back">I am ready</button>
+    </section>
+
+    <!-- ===== GAME SCREEN ===== -->
+    <section id="screen-game" class="screen">
+      <header class="hud">
+        <div class="stat" data-stat="authority">
+          <div class="stat-ico">👑</div>
+          <div class="stat-bar"><div class="stat-fill"></div></div>
+        </div>
+        <div class="stat" data-stat="army">
+          <div class="stat-ico">⚔️</div>
+          <div class="stat-bar"><div class="stat-fill"></div></div>
+        </div>
+        <div class="stat" data-stat="people">
+          <div class="stat-ico">❤️</div>
+          <div class="stat-bar"><div class="stat-fill"></div></div>
+        </div>
+        <div class="stat" data-stat="treasury">
+          <div class="stat-ico">💰</div>
+          <div class="stat-bar"><div class="stat-fill"></div></div>
+        </div>
+      </header>
+
+      <div class="reign-line">Year <span id="reign-year">1</span> of your reign</div>
+
+      <div class="card-stage">
+        <div class="card-shadow"></div>
+        <article class="card" id="card">
+          <div class="card-portrait" id="card-portrait">🧔</div>
+          <div class="card-name" id="card-name">The Advisor</div>
+          <p class="card-text" id="card-text">A dilemma awaits…</p>
+          <div class="choice-hint left" id="hint-left"></div>
+          <div class="choice-hint right" id="hint-right"></div>
+        </article>
+      </div>
+
+      <div class="choices">
+        <button class="btn-choice" id="btn-left"><span class="arrow">◀</span><span class="label" id="label-left">No</span></button>
+        <button class="btn-choice" id="btn-right"><span class="label" id="label-right">Yes</span><span class="arrow">▶</span></button>
+      </div>
+    </section>
+
+    <!-- ===== GAME OVER ===== -->
+    <section id="screen-over" class="screen">
+      <div class="over-crest" id="over-crest">☠</div>
+      <h2 class="over-title" id="over-title">Your Reign Ends</h2>
+      <p class="over-reason" id="over-reason"></p>
+      <div class="over-reign">You ruled for <strong id="over-years">0</strong> years.</div>
+      <div class="lesson">
+        <div class="lesson-label">Machiavelli's counsel</div>
+        <p class="lesson-text" id="over-lesson"></p>
+      </div>
+      <button class="btn-primary" id="btn-again">Rise Again</button>
+      <button class="btn-ghost" id="btn-share">Share Your Reign</button>
+      <button class="btn-ghost" id="btn-over-gallery">Read this counsel</button>
+      <button class="btn-ghost" id="btn-menu">Abdicate to Menu</button>
+    </section>
+
+    <!-- ===== WISDOM GALLERY ===== -->
+    <section id="screen-gallery" class="screen">
+      <h2 class="gallery-title">Wisdom Collected</h2>
+      <p class="gallery-progress" id="gallery-progress">0 / 0 counsels gathered</p>
+      <div class="gallery-grid" id="gallery-grid"></div>
+      <button class="btn-primary" id="btn-gallery-back">Return</button>
+    </section>
+
+    <!-- transient toast for newly learned counsel -->
+    <div id="toast" class="toast"></div>
+
+  </div>
+
+  <script src="scenarios.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
