@@ -56,7 +56,27 @@ own arms vs. mercenaries, "well-used" cruelty, the lion and the fox, why the
 love of the people is the best fortress, and more. Win or lose, you come away
 having absorbed a slice of Machiavelli's playbook.
 
-## Run it
+## Play online (GitHub Pages)
+
+The game ships with a GitHub Actions workflow that deploys it to GitHub Pages
+automatically. To turn it on (one-time):
+
+1. Go to the repository's **Settings → Pages**.
+2. Under **Build and deployment → Source**, choose **GitHub Actions**.
+3. Push to `main` (or run the **Deploy to GitHub Pages** workflow manually from
+   the **Actions** tab). The workflow publishes the site and prints the live URL.
+
+Once deployed it lives at:
+
+```
+https://nextlevelcorp.github.io/prince_game/
+```
+
+Open that link on your phone and choose **"Add to Home Screen"** to play it
+full-screen like a native app. All asset paths are relative, so it works
+correctly from the `/prince_game/` project sub-path.
+
+## Run it locally
 
 It's a single static web app — no build step, no dependencies.
 
