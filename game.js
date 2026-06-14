@@ -138,6 +138,8 @@
   function show(name) {
     Object.values(screens).forEach((s) => s.classList.remove("active"));
     screens[name].classList.add("active");
+    // run the live realm animation only while the game screen is visible
+    if (window.Realm) Realm.setActive(name === "game");
   }
 
   // ---- Deck handling: shuffle, avoid immediate repeats ----
@@ -169,6 +171,7 @@
       els.statEls[s].classList.toggle("danger", v <= 20 || v >= 80);
     });
     els.year.textContent = game.year;
+    if (window.Realm) Realm.setStats(game.stats, true);
   }
 
   function renderCard() {
@@ -219,6 +222,8 @@
       STATS.forEach((s) => { game.stats[s] += (eff[s] || 0); });
       // living through the dilemma teaches its lesson
       const learned = collectWisdom(game.current.id);
+      // the realm visibly reacts to the decision
+      if (window.Realm) Realm.flourish(eff);
       const doom = checkDoom();
       renderStats();
       if (doom) {
@@ -269,6 +274,7 @@
     if (game.year > best) localStorage.setItem(BEST_KEY, String(game.year));
 
     if (survivedLong) Sound.win(); else Sound.lose();
+    if (window.Realm) Realm.setMode(survivedLong ? "win" : "lose");
     setTimeout(() => show("over"), 380);
   }
 
@@ -433,8 +439,13 @@
     STATS.forEach((s) => { game.stats[s] = START; });
     game.year = 1;
     refillDeck();
-    renderStats();
     show("game");
+    if (window.Realm) {
+      Realm.setMode("play");
+      Realm.resize();                       // canvas now has real dimensions
+      Realm.setStats(game.stats, false);    // start balanced, no tween
+    }
+    renderStats();
     drawCard();
   }
 
@@ -530,6 +541,7 @@
     $("#title-best").textContent = txt;
   }
 
+  if (window.Realm) Realm.init();
   showBest();
   show("title");
 })();

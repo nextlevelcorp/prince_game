@@ -9,7 +9,29 @@ you can while learning what Machiavelli would have whispered in your ear.
 
 ## How to play
 
-Each turn shows a **scenario card** with two replies:
+### A living, illustrated realm
+
+Above the dilemma you see your **kingdom rendered live on a canvas** — no image
+files, everything is drawn with code and animated. It reacts to your rule in
+real time:
+
+- 🏰 **Castle & banner** grow and fly proud with your **Authority** (and crack
+  when your grip slips).
+- ⚔️ **Soldiers** march in or desert as your **Army** rises and falls.
+- 🏠 **Town** is built up by your **Treasury**; houses glow warmly when the
+  **People** are content — and catch fire when they turn on you.
+- 👥 **Crowd** cheers with raised arms when loved, or storms out with torches
+  when hated.
+- 💰 **Treasure chest** fills with gold coins as your **Treasury** grows.
+- ☀️ **Sky & weather** brighten to a golden day in a flourishing realm, or
+  darken to rain when things go grim.
+
+Every decision sends floating `+/-` markers and particle bursts across the
+scene, so you *see* the consequences land.
+
+### The dilemma
+
+Each turn a parchment scroll shows a **dilemma** with two replies:
 
 - **◀ Swipe / tap left** — the first reply
 - **Swipe / tap right ▶** — the second reply (arrow keys also work on desktop)
