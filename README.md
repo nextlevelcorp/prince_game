@@ -34,6 +34,15 @@ gallery (reachable from the title and game-over screens). Tap an unlocked counse
 to read the full Machiavellian principle behind it. Your goal beyond survival:
 gather all the counsels in the deck. Progress is saved on your device.
 
+## Share your reign
+
+When a reign ends you can **Share Your Reign** — the game draws a result card
+(crest, years ruled, how you fell, and counsels gathered) to a canvas and shares
+it as an image via the device's native share sheet (Web Share API). Where image
+sharing isn't supported it falls back to sharing/copying a text summary and
+offering the card as a download. **Read this counsel** jumps straight to the
+lesson that ended your reign, highlighted in the Wisdom gallery.
+
 ## Sound
 
 The game has a synthesized soundtrack of effects (card deals, decisions, learning

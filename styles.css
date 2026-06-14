@@ -409,6 +409,8 @@ html, body {
   transition: max-height .3s ease, margin-top .3s ease;
 }
 .wisdom-card.open .wisdom-text { max-height: 320px; margin-top: 10px; }
+.wisdom-card.focus { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold), 0 0 18px rgba(217,176,74,.3); animation: focusGlow 1.4s ease; }
+@keyframes focusGlow { 0%,100% { box-shadow: 0 0 0 1px var(--gold), 0 0 18px rgba(217,176,74,.25); } 50% { box-shadow: 0 0 0 1px var(--gold-soft), 0 0 28px rgba(217,176,74,.55); } }
 .wisdom-chevron { margin-left: auto; color: var(--gold); transition: transform .25s ease; }
 .wisdom-card.open .wisdom-chevron { transform: rotate(90deg); }
 .wisdom-card.locked .wisdom-chevron { color: var(--line); }

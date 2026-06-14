@@ -91,11 +91,20 @@
     }
   };
 
+  // Short cause-of-fall labels for the shareable result card.
+  const FALL = {
+    authority: { low: "Lost the crown's grip", high: "Toppled as a tyrant" },
+    army:      { low: "Left defenceless", high: "Betrayed by your own army" },
+    people:    { low: "Overthrown by the mob", high: "Drowned in indulgent chaos" },
+    treasury:  { low: "Bankrupted the realm", high: "Ruined by miserly greed" },
+  };
+
   const game = {
     stats: {},
     year: 1,
     deck: [],
     current: null,
+    result: null,
   };
 
   // ---- DOM ----
@@ -241,6 +250,13 @@
     $("#over-lesson").textContent = game.current.lesson;
 
     const survivedLong = game.year >= 20;
+    game.result = {
+      years: game.year,
+      win: survivedLong,
+      cause: FALL[doom.stat][doom.dir],
+      counsels: wisdom.size,
+      lessonId: game.current.id,
+    };
     const crest = $("#over-crest");
     crest.textContent = survivedLong ? "♚" : "☠";
     crest.classList.toggle("win", survivedLong);
@@ -267,15 +283,17 @@
   }
 
   // ---- Wisdom gallery ----
-  function buildGallery() {
+  function buildGallery(focusId) {
     const grid = $("#gallery-grid");
     grid.innerHTML = "";
     let count = 0;
+    let focusEl = null;
     SCENARIOS.forEach((s) => {
       const got = wisdom.has(s.id);
       if (got) count++;
       const cardEl = document.createElement("div");
       cardEl.className = "wisdom-card " + (got ? "unlocked" : "locked");
+      if (got && s.id === focusId) { cardEl.classList.add("open", "focus"); focusEl = cardEl; }
       if (got) {
         cardEl.innerHTML =
           '<div class="wisdom-head">' +
@@ -301,11 +319,114 @@
       grid.appendChild(cardEl);
     });
     $("#gallery-progress").textContent = count + " / " + SCENARIOS.length + " counsels gathered";
+    if (focusEl && focusEl.scrollIntoView) {
+      setTimeout(() => focusEl.scrollIntoView({ behavior: "smooth", block: "center" }), 60);
+    }
   }
   function esc(str) {
     return String(str).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   }
-  function openGallery() { buildGallery(); show("gallery"); }
+  function openGallery(focusId) { buildGallery(focusId); show("gallery"); }
+
+  // ---- Share a finished reign (canvas card + Web Share / clipboard fallback) ----
+  function wrapText(ctx, text, x, y, maxW, lh) {
+    const words = text.split(" ");
+    let line = "";
+    for (let i = 0; i < words.length; i++) {
+      const test = line + words[i] + " ";
+      if (ctx.measureText(test).width > maxW && line) {
+        ctx.fillText(line.trim(), x, y);
+        line = words[i] + " ";
+        y += lh;
+      } else { line = test; }
+    }
+    ctx.fillText(line.trim(), x, y);
+    return y;
+  }
+
+  function renderShareCard(r) {
+    const W = 640, H = 800;
+    const cv = document.createElement("canvas");
+    cv.width = W; cv.height = H;
+    const ctx = cv.getContext("2d");
+    // background
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#3a2a1b"); g.addColorStop(0.5, "#1a1410"); g.addColorStop(1, "#120d09");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    // border
+    ctx.strokeStyle = "#d9b04a"; ctx.lineWidth = 4;
+    ctx.strokeRect(22, 22, W - 44, H - 44);
+    ctx.textAlign = "center";
+    // crest
+    ctx.fillStyle = r.win ? "#d9b04a" : "#a8412f";
+    ctx.font = "90px serif";
+    ctx.fillText(r.win ? "♚" : "☠", W / 2, 150);
+    // title
+    ctx.fillStyle = "#e7c878";
+    ctx.font = "italic 30px Georgia, serif";
+    ctx.fillText("The Prince's Dilemma", W / 2, 205);
+    // verdict
+    ctx.fillStyle = "#f2e6cf";
+    ctx.font = "bold 40px Georgia, serif";
+    ctx.fillText(r.win ? "A Reign Remembered" : "A Reign Ended", W / 2, 285);
+    // years
+    ctx.fillStyle = "#d9b04a";
+    ctx.font = "bold 150px Georgia, serif";
+    ctx.fillText(String(r.years), W / 2, 470);
+    ctx.fillStyle = "#b8a587";
+    ctx.font = "26px Georgia, serif";
+    ctx.fillText(r.years === 1 ? "year on the throne" : "years on the throne", W / 2, 515);
+    // cause
+    ctx.fillStyle = "#f2e6cf";
+    ctx.font = "italic 30px Georgia, serif";
+    wrapText(ctx, "“" + r.cause + "”", W / 2, 600, W - 120, 38);
+    // counsels
+    ctx.fillStyle = "#d9b04a";
+    ctx.font = "24px Georgia, serif";
+    ctx.fillText(r.counsels + " / " + SCENARIOS.length + " counsels of Machiavelli gathered", W / 2, 700);
+    ctx.fillStyle = "#8a7a5f";
+    ctx.font = "20px Georgia, serif";
+    ctx.fillText("Rule by wit, not by luck.", W / 2, 745);
+    return cv;
+  }
+
+  function shareText(r) {
+    return "I ruled for " + r.years + (r.years === 1 ? " year" : " years") +
+      " in The Prince's Dilemma 👑 — " + r.cause.toLowerCase() +
+      ". " + r.counsels + "/" + SCENARIOS.length + " of Machiavelli's counsels gathered. Can you reign longer?";
+  }
+
+  async function shareResult() {
+    const r = game.result;
+    if (!r) return;
+    const text = shareText(r);
+    const cv = renderShareCard(r);
+    // Try sharing the rendered card as an image first.
+    try {
+      const blob = await new Promise((res) => cv.toBlob(res, "image/png"));
+      if (blob && navigator.canShare) {
+        const file = new File([blob], "prince-reign.png", { type: "image/png" });
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], text: text, title: "The Prince's Dilemma" });
+          return;
+        }
+      }
+    } catch (e) { /* fall through to text/clipboard */ }
+    // Text share (no image support)
+    try {
+      if (navigator.share) { await navigator.share({ text: text, title: "The Prince's Dilemma" }); return; }
+    } catch (e) { return; /* user cancelled */ }
+    // Last resort: copy to clipboard, and offer the image as a download.
+    try {
+      if (navigator.clipboard) { await navigator.clipboard.writeText(text); toast("Result copied to clipboard"); }
+      else toast("Sharing not supported here");
+    } catch (e) { toast("Sharing not supported here"); }
+    try {
+      const url = cv.toDataURL("image/png");
+      const a = document.createElement("a");
+      a.href = url; a.download = "prince-reign.png"; a.click();
+    } catch (e) { /* ignore */ }
+  }
 
   // ---- New game ----
   function newGame() {
@@ -367,8 +488,9 @@
   $("#btn-how").addEventListener("click", () => { Sound.click(); show("how"); });
   $("#btn-how-back").addEventListener("click", () => { Sound.click(); show("title"); });
   $("#btn-gallery").addEventListener("click", () => { Sound.click(); openGallery(); });
-  $("#btn-over-gallery").addEventListener("click", () => { Sound.click(); openGallery(); });
+  $("#btn-over-gallery").addEventListener("click", () => { Sound.click(); openGallery(game.result && game.result.lessonId); });
   $("#btn-gallery-back").addEventListener("click", () => { Sound.click(); show("title"); showBest(); });
+  $("#btn-share").addEventListener("click", () => { Sound.click(); shareResult(); });
 
   // ---- Sound toggle ----
   const soundBtn = $("#btn-sound");
